@@ -16,18 +16,18 @@ class ResidualConv(nn.Module):
         # self.LIFNode1 = neuron.LIFNode(surrogate_function=surrogate.ATan())
         # self.LIFNode2 = neuron.LIFNode(surrogate_function=surrogate.ATan())
         self.conv_block = nn.Sequential(
-            nn.BatchNorm2d(input_dim),
+            nn.InstanceNorm2d(input_dim),
             neuron.LIFNode(surrogate_function=surrogate.ATan()),
             nn.Conv2d(
                 input_dim, output_dim, kernel_size=3, stride=stride, padding=padding
             ),
-            nn.BatchNorm2d(output_dim),
+            nn.InstanceNorm2d(output_dim),
             neuron.LIFNode(surrogate_function=surrogate.ATan()),
             nn.Conv2d(output_dim, output_dim, kernel_size=3, padding=1),
         )
         self.conv_skip = nn.Sequential(
             nn.Conv2d(input_dim, output_dim, kernel_size=3, stride=stride, padding=1),
-            nn.BatchNorm2d(output_dim),
+            nn.InstanceNorm2d(output_dim),
         )
 
     def forward(self, x):
@@ -50,7 +50,7 @@ class ResUnet(nn.Module):
 
         self.input_layer = nn.Sequential(
             nn.Conv2d(channel, filters[0], kernel_size=3, padding=1),
-            nn.BatchNorm2d(filters[0]),
+            nn.InstanceNorm2d(filters[0]),
             neuron.LIFNode(surrogate_function=surrogate.ATan()),
             nn.Conv2d(filters[0], filters[0], kernel_size=3, padding=1),
         )
@@ -115,8 +115,8 @@ class double_conv2d_bn(nn.Module):
         self.conv2 = nn.Conv2d(out_channels, out_channels,
                                kernel_size=kernel_size,
                                stride=strides, padding=padding, bias=True)
-        self.bn1 = nn.BatchNorm2d(out_channels)
-        self.bn2 = nn.BatchNorm2d(out_channels)
+        self.bn1 = nn.InstanceNorm2d(out_channels)
+        self.bn2 = nn.InstanceNorm2d(out_channels)
         self.LIFNode2 = neuron.LIFNode(surrogate_function=surrogate.ATan())
 
     def forward(self, x):
@@ -133,7 +133,7 @@ class deconv2d_bn(nn.Module):
         self.conv1 = nn.ConvTranspose2d(in_channels, out_channels,
                                         kernel_size=kernel_size,
                                         stride=strides, bias=True)
-        self.bn1 = nn.BatchNorm2d(out_channels)
+        self.bn1 = nn.InstanceNorm2d(out_channels)
         self.LIFNode1 = neuron.LIFNode(surrogate_function=surrogate.ATan())
     def forward(self, x):
         # out = F.leaky_relu(self.bn1(self.conv1(x)))
@@ -212,8 +212,8 @@ class Unet_end(nn.Module):
         x4=self.layer3(x3)
         out=self.layer4(x4)
         return out
-model = Unet_end()
-x=torch.randn(1,1,224,224)
-y=torch.randn(1,1,224,224)
-output = model(x, y)
-print(output.shape)
+# model = Unet_end()
+# x=torch.randn(1,1,224,224)
+# y=torch.randn(1,1,224,224)
+# output = model(x, y)
+# print(output.shape)
